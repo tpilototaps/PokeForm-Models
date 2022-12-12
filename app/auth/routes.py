@@ -2,8 +2,8 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_user, logout_user, current_user
 from app.auth.forms import CreateUser, Login, PokemonSummons
 import requests
-
 from app.models import User, db
+from werkzeug.security import check_password_hash
 
 auth = Blueprint('auth', __name__, template_folder='auth_templates')
 
@@ -41,13 +41,14 @@ def signin():
             user = User.query.filter_by(email=email).first()
             if user:
                 # db_password = User.query.filter_by(password=password).first()
-                if password == user.password:
+                if check_password_hash(user.password, password):
                     print('Logged in')
                     login_user(user)
                 else:
                     print('Incorrect password')
             else:
                 print('user doesnt exist')
+            return redirect(url_for('poke_blueprint.view_posts')) 
     return render_template('login.html', user_login=user_login)
 
 @auth.route('/your_pokemon', methods=['GET', 'POST'])
@@ -79,6 +80,7 @@ def form():
 
             def pokemon_attributes(your_dict):
                 if usable_pokename.lower() == 'ditto':
+                    name = 'ditto'
                     final_display = []
                     for value in your_dict.values():
                         pokemon_dict = {}
@@ -92,8 +94,12 @@ def form():
                             'Defense base_stat': value['stats'][2]['base_stat']
                         }
                         final_display.append(pokemon_dict)
-                    return final_display[0]
+                    final_display.append(name)
+                    to_include = final_display[0]['ditto'],final_display[-1].title()
+                    return render_template('your_pokestats.html', pokestats=to_include)
+
                 elif usable_pokename.lower() == 'pikachu':
+                    name = 'pikachu'
                     final_display = []
                     for value in your_dict.values():
                         pokemon_dict = {}
@@ -107,8 +113,12 @@ def form():
                             'Defense base_stat': value['stats'][2]['base_stat']
                         }
                         final_display.append(pokemon_dict)
-                    return final_display[1]
+                    final_display.append(name)
+                    to_include = final_display[1]['pikachu'],final_display[-1].title()
+                    return render_template('your_pokestats.html', pokestats=to_include)
+
                 elif usable_pokename.lower() == 'snorlax':
+                    name = 'snorlax'
                     final_display = []
                     for value in your_dict.values():
                         pokemon_dict = {}
@@ -122,8 +132,12 @@ def form():
                             'Defense base_stat': value['stats'][2]['base_stat']
                         }
                         final_display.append(pokemon_dict)
-                    return final_display[2]
+                    final_display.append(name)
+                    to_include = final_display[2]['snorlax'],final_display[-1].title()
+                    return render_template('your_pokestats.html', pokestats=to_include)
+
                 elif usable_pokename.lower() == 'garchomp':
+                    name = 'garchomp'
                     final_display = []
                     for value in your_dict.values():
                         pokemon_dict = {}
@@ -137,8 +151,12 @@ def form():
                             'Defense base_stat': value['stats'][2]['base_stat']
                         }
                         final_display.append(pokemon_dict)
-                    return final_display[3]
+                    final_display.append(name)
+                    to_include = final_display[3]['garchomp'],final_display[-1].title()
+                    return render_template('your_pokestats.html', pokestats=to_include)
+
                 elif usable_pokename.lower() == 'squirtle':
+                    name = "squirtle"
                     final_display = []
                     for value in your_dict.values():
                         pokemon_dict = {}
@@ -152,8 +170,12 @@ def form():
                             'Defense base_stat': value['stats'][2]['base_stat']
                         }
                         final_display.append(pokemon_dict)
-                    return final_display[4]
+                    final_display.append(name)
+                    to_include = final_display[4]['squirtle'],final_display[-1].title()
+                    return render_template('your_pokestats.html', pokestats=to_include)
+                    
                 elif usable_pokename.lower() == 'charizard':
+                    name = 'Charizard'
                     final_display = []
                     for value in your_dict.values():
                         pokemon_dict = {}
@@ -167,7 +189,9 @@ def form():
                             'Defense base_stat': value['stats'][2]['base_stat']
                         }
                         final_display.append(pokemon_dict)
-                    return final_display[5]
+                    final_display.append(name)
+                    to_include = final_display[5]['charizard'],final_display[-1].title()
+                    return render_template('your_pokestats.html', pokestats=to_include)
                 else:
                     return 'The pokemon you summoned is not yet available. Please refresh the page and try again.'
 
